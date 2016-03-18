@@ -1,0 +1,24 @@
+{
+  "generator-jhipster": {
+    "baseName": "Enigme30",
+    "packageName": "com.zed.enigme",
+    "packageFolder": "com/zed/enigme",
+    "authenticationType": "session",
+    "hibernateCache": "ehcache",
+    "clusteredHttpSession": "no",
+    "websocket": "no",
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "prodDatabaseType": "mysql",
+    "searchEngine": "no",
+    "useSass": true,
+    "buildTool": "maven",
+    "frontendBuilder": "gulp",
+    "enableTranslation": false,
+    "enableSocialSignIn": false,
+    "rememberMeKey": "f97180037680cd059ef505159173034207c5b1dc",
+    "testFrameworks": [
+      "gatling"
+    ]
+  }
+}

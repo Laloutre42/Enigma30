@@ -1,0 +1,31 @@
+<div ng-if="enigma !== 'undefined' && enigma[0] !== 'undefined' && number !== 'undefined' && question !== ''">
+    <div>
+        <h4>Enigme numéro {{number}}</h4>
+    </div>
+
+    <form name="enigmaForm" class="form-horizontal" role="form">
+
+        <!--Question-->
+        <div class="form-group question">
+            <label class="col-sm-2 control-label">Question</label>
+
+            <div class="col-sm-10">
+                <label class="col-sm-2 control-label">{{question}}</label>
+            </div>
+        </div>
+
+        <!--Answer-->
+        <div class="form-group answer">
+            <label class="col-sm-2 control-label">Réponse</label>
+
+            <div class="col-sm-10" ng-class="{'has-error': enigmaForm.answer.$invalid && enigmaForm.answer.$dirty}">
+                <input name="answer" type="text" class="form-control" placeholder="Réponse" ng-model="answer" required maxlength="255">
+            </div>
+        </div>
+
+        <div>
+            <button validation-submit="enigmaForm" type="submit" class="btn btn-primary" ng-click="submit()" ng-disabled="enigmaForm.$invalid">Soumettre</button>
+        </div>
+
+    </form>
+</div>

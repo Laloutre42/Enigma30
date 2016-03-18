@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+	<property name="now" value="now()" dbms="mysql,h2" />
+	<property name="now" value="current_timestamp" dbms="postgresql" />
+	<property name="now" value="sysdate" dbms="oracle" />
+
+	<changeSet id="00000000000004" author="azd">
+
+		<createTable tableName="enigma_execution">
+			<column name="id" type="bigint" autoIncrement="${autoIncrement}">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="user_id" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="enigma_id" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="duration" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="answer" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="is_ok" type="boolean" valueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+	</changeSet>
+
+</databaseChangeLog>

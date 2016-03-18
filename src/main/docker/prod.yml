@@ -1,0 +1,12 @@
+enigme30-mysql:
+  container_name: enigme30-mysql
+  image: mysql:5.7.9
+  # volumes:
+  #   - ~/volumes/jhipster/Enigme30/mysql/:/var/lib/mysql/
+  environment:
+    - MYSQL_USER=root
+    - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    - MYSQL_DATABASE=enigme30
+  ports:
+    - "3306:3306"
+  command: mysqld --lower_case_table_names=1
