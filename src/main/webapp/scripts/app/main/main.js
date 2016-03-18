@@ -30,8 +30,8 @@ angular.module('enigme30App')
                     }
                 },
                 resolve: {
-                    enigma: function (Enigma) {
-                        return Enigma.query()
+                    currentEnigmaExecution: function (EnigmaExecution) {
+                        return EnigmaExecution.query()
                     }
                 }
             });

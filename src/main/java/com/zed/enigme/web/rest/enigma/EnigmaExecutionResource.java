@@ -66,7 +66,7 @@ public class EnigmaExecutionResource {
 		EnigmaExecutionResult enigmaExecutionResult = enigmaService.saveEnigmaExecution(enigmaToCheck);
 
 		if (enigmaExecutionResult == null) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(null, HeaderUtil.createFailureAlert("enigma", "error", "Impossible de prendre en compte votre réponse"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		else {
 			return new ResponseEntity<>(enigmaExecutionResult, HttpStatus.OK);

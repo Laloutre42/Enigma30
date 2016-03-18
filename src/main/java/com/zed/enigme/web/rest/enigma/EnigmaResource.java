@@ -52,30 +52,4 @@ public class EnigmaResource {
 		return new ResponseEntity<>(enigmas, headers, HttpStatus.OK);
 	}
 
-	/**
-	 * POST /enigma/check -> Check enigma
-	 */
-	@RequestMapping(value = "/enigma/check", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	@Timed
-	@Transactional(readOnly = true)
-	public ResponseEntity<?> checkEnigma(@RequestBody Enigma enigmaToCheck, HttpServletRequest request) throws URISyntaxException {
-
-		log.debug("REST request to check Enigma : {}", enigmaToCheck);
-
-		Optional<Enigma> optionalEnigma = enigmaRepository.findOneByNumber(enigmaToCheck.getNumber());
-
-		if (!optionalEnigma.isPresent()) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
-
-		log.debug("Enigma answer to check : -{}-", enigmaToCheck.getAnswer());
-		log.debug("Enigma answer in db : -{}-", optionalEnigma.get().getAnswer());
-
-		boolean hasBeenFound = optionalEnigma.get().getAnswer().trim().replaceAll("/\\s/", "").equalsIgnoreCase(enigmaToCheck.getAnswer().trim().replaceAll("/\\s/", ""));
-		if (hasBeenFound) {
-			return ResponseEntity.ok(true);
-		}
-		return ResponseEntity.ok(false);
-	}
-
 }

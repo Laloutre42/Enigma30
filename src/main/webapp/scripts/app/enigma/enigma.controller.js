@@ -1,16 +1,16 @@
 'use strict';
 
 angular.module('enigme30App')
-    .controller('EnigmaController', function ($scope, Principal, enigma, EnigmaCheck) {
+    .controller('EnigmaController', function ($log, $scope, Principal, currentEnigmaExecution, EnigmaExecution) {
 
         Principal.identity().then(function (account) {
             $scope.account = account;
             $scope.isAuthenticated = Principal.isAuthenticated;
         });
 
-        if (typeof enigma !== 'undefined' && typeof enigma[0] !== 'undefined') {
-            $scope.number = enigma[0].number;
-            $scope.question = enigma[0].question;
+        if (angular.isDefined(currentEnigmaExecution)) {
+            $scope.number = currentEnigmaExecution.number;
+            $scope.question = currentEnigmaExecution.question;
         }
 
         $scope.submit = function () {
@@ -20,13 +20,13 @@ angular.module('enigme30App')
             answerEnigma.question = $scope.question;
             answerEnigma.answer = $scope.answer;
 
-            EnigmaCheck.check(answerEnigma).$promise.then(
+            EnigmaExecution.save(answerEnigma).$promise.then(
                 function (data) {
-                    console.log(data);
+                    $log.debug(data);
 
                 },
                 function (error) {
-                    console.error(error);
+                    $log.error(error);
                 });
         };
 
