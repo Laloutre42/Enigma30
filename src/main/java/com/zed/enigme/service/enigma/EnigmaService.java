@@ -1,24 +1,23 @@
 package com.zed.enigme.service.enigma;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
-import javax.inject.Inject;
-
+import com.zed.enigme.domain.User;
+import com.zed.enigme.domain.enigma.Enigma;
+import com.zed.enigme.domain.enigma.EnigmaExecution;
+import com.zed.enigme.enumeration.EnigmaExecutionResult;
+import com.zed.enigme.enumeration.EnigmaState;
+import com.zed.enigme.repository.UserRepository;
+import com.zed.enigme.repository.enigma.EnigmaExecutionRepository;
+import com.zed.enigme.repository.enigma.EnigmaRepository;
+import com.zed.enigme.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.zed.enigme.domain.User;
-import com.zed.enigme.domain.enigma.Enigma;
-import com.zed.enigme.domain.enigma.EnigmaExecution;
-import com.zed.enigme.enumeration.EnigmaExecutionResult;
-import com.zed.enigme.repository.UserRepository;
-import com.zed.enigme.repository.enigma.EnigmaExecutionRepository;
-import com.zed.enigme.repository.enigma.EnigmaRepository;
-import com.zed.enigme.security.SecurityUtils;
+import javax.inject.Inject;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Service class for managing enigmas.
@@ -27,95 +26,138 @@ import com.zed.enigme.security.SecurityUtils;
 @Transactional
 public class EnigmaService {
 
-	@Inject
-	private EnigmaExecutionRepository enigmaExecutionRepository;
+    private final Logger log = LoggerFactory.getLogger(EnigmaService.class);
+    @Inject
+    private EnigmaExecutionRepository enigmaExecutionRepository;
+    @Inject
+    private EnigmaRepository enigmaRepository;
+    @Inject
+    private UserRepository userRepository;
 
-	@Inject
-	private EnigmaRepository enigmaRepository;
+    @Transactional(readOnly = true)
+    public Enigma getLastEnigmaFoundForCurrentUser() {
 
-	@Inject
-	private UserRepository userRepository;
+        log.debug("[getLastEnigmaFoundForCurrentUser] Get current enigma for user login {}", SecurityUtils.getCurrentUser().getUsername());
 
-	private final Logger log = LoggerFactory.getLogger(EnigmaService.class);
+        Optional<User> user = userRepository.findOneByLogin(SecurityUtils.getCurrentUser().getUsername());
 
-	@Transactional(readOnly = true)
-	public Enigma getCurrentEnigmaForUser() {
+        // No user has been found
+        if (!user.isPresent()) {
+            log.error("[getLastEnigmaFoundForCurrentUser] No user has been found");
+            return null;
+        }
 
-		log.debug("[getCurrentEnigmaForUser] Get current enigma for user login {}", SecurityUtils.getCurrentUser().getUsername());
+        List<EnigmaExecution> enigmaExecution = enigmaExecutionRepository.findByUser_IdAndIsOkTrue(user.get().getId());
 
-		Optional<User> user = userRepository.findOneByLogin(SecurityUtils.getCurrentUser().getUsername());
+        // No enigmaExecution has been found
+        if (enigmaExecution == null || enigmaExecution.isEmpty()) {
 
-		// No user has been found
-		if (!user.isPresent()) {
-			log.error("[getCurrentEnigmaForUser] No user has been found");
-			return null;
-		}
+            log.info("[getLastEnigmaFoundForCurrentUser] No current enigma for user, return first One");
+            Optional<Enigma> firstEnigma = enigmaRepository.findOneByNumber(1);
 
-		List<EnigmaExecution> enigmaExecution = enigmaExecutionRepository.findByUser_IdAndIsOkTrue(user.get().getId());
+            // No enigma has been found
+            if (!firstEnigma.isPresent()) {
+                log.error("[getLastEnigmaFoundForCurrentUser] No enigma has been found");
+                return null;
+            }
+            return firstEnigma.get();
+        }
 
-		// enigmaExecution has been found
-		if (enigmaExecution != null && !enigmaExecution.isEmpty()) {
+        Enigma enigma = enigmaExecution.stream().max(Comparator.comparing(e -> e.getEnigma().getNumber())).get().getEnigma();
 
-			Enigma enigma = enigmaExecution.stream().max(Comparator.comparing(e -> e.getEnigma().getNumber())).get().getEnigma();
-			return enigma;
-		}
+        // Next enigma
+        Optional<Enigma> nextEnigma = nextEnigma(enigma);
+        if (!nextEnigma.isPresent()) {
+            return null;
+        }
+        return nextEnigma.get();
+    }
 
-		log.info("[getCurrentEnigmaForUser] No current enigma for user, return first One");
+    @Transactional(readOnly = true)
+    public EnigmaState getCurrentEnigmaStateForUser() {
 
-		Optional<Enigma> firstEnigma = enigmaRepository.findOneByNumber(1);
+        log.debug("[getCurrentEnigmaStateForUser] Get current enigma for user login {}", SecurityUtils.getCurrentUser().getUsername());
 
-		// No enigma has been found
-		if (!firstEnigma.isPresent()) {
-			log.error("[getCurrentEnigmaForUser] No enigma has been found");
-			return null;
-		}
+        Optional<User> user = userRepository.findOneByLogin(SecurityUtils.getCurrentUser().getUsername());
 
-		return firstEnigma.get();
-	}
+        // No user has been found
+        if (!user.isPresent()) {
+            log.error("[getCurrentEnigmaStateForUser] No user has been found");
+            return null;
+        }
 
-	@Transactional(readOnly = true)
-	public EnigmaExecutionResult saveEnigmaExecution(Enigma enigmaToCheck) {
+        List<EnigmaExecution> enigmaExecution = enigmaExecutionRepository.findByUser_Id(user.get().getId());
 
-		log.debug("[saveEnigmaExecution] REST request to check Enigma : {}", enigmaToCheck);
+        // No enigmas has been done
+        if (enigmaExecution == null || enigmaExecution.isEmpty()) {
+            return EnigmaState.BEGINNING;
+        }
 
-		Optional<Enigma> enigmaInDb = enigmaRepository.findOneByNumber(enigmaToCheck.getNumber());
+        // enigmaExecution has been found
+        Enigma enigma = enigmaExecution.stream().max(Comparator.comparing(e -> e.getEnigma().getNumber())).get().getEnigma();
+        Optional<Enigma> nextEnigma = nextEnigma(enigma);
 
-		if (!enigmaInDb.isPresent()) {
-			log.error("[saveEnigmaExecution] No enigma has been found");
-			return null;
-		}
+        // No enigma has been found
+        if (!nextEnigma.isPresent()) {
+            return EnigmaState.END;
+        }
 
-		log.debug("[saveEnigmaExecution] Enigma answer to check : -{}-", enigmaToCheck.getAnswer());
-		log.debug("[saveEnigmaExecution] Enigma answer in db : -{}-", enigmaInDb.get().getAnswer());
+        return EnigmaState.BEGINNING;
+    }
 
-		// Check if answer match proposition
-		boolean hasBeenFound = enigmaInDb.get().getAnswer().trim().replaceAll("/\\s/", "").equalsIgnoreCase(enigmaToCheck.getAnswer().trim().replaceAll("/\\s/", ""));
+    @Transactional(readOnly = true)
+    public EnigmaExecutionResult saveEnigmaExecution(Enigma enigmaToCheck) {
 
-		Optional<User> user = userRepository.findOneByLogin(SecurityUtils.getCurrentUser().getUsername());
+        log.debug("[saveEnigmaExecution] REST request to check Enigma : {}", enigmaToCheck);
 
-		// No user has been found
-		if (!user.isPresent()) {
-			log.error("[saveEnigmaExecution] No user has been found");
-			return null;
-		}
+        Optional<Enigma> enigmaInDb = enigmaRepository.findOneByNumber(enigmaToCheck.getNumber());
 
-		EnigmaExecution enigmaExecution = new EnigmaExecution(user.get(), enigmaInDb.get(), 2l, enigmaToCheck.getAnswer(), hasBeenFound);
-		enigmaExecutionRepository.save(enigmaExecution);
+        if (!enigmaInDb.isPresent()) {
+            log.error("[saveEnigmaExecution] No enigma has been found");
+            return null;
+        }
 
-		if (!hasBeenFound) {
-			return EnigmaExecutionResult.NOT_FOUND;
-		}
+        log.debug("[saveEnigmaExecution] Enigma answer to check : -{}-", enigmaToCheck.getAnswer());
+        log.debug("[saveEnigmaExecution] Enigma answer in db : -{}-", enigmaInDb.get().getAnswer());
 
-		if (hasBeenFound && hasFinishEnigma(enigmaInDb.get().getNumber())) {
-			return EnigmaExecutionResult.FINISHED;
-		}
-		return EnigmaExecutionResult.FOUND;
+        // Check if answer match proposition
+        boolean hasBeenFound = enigmaInDb.get().getAnswer().trim().replaceAll("/\\s/", "").equalsIgnoreCase(enigmaToCheck.getAnswer().trim().replaceAll("/\\s/", ""));
 
-	}
+        Optional<User> user = userRepository.findOneByLogin(SecurityUtils.getCurrentUser().getUsername());
 
-	@Transactional(readOnly = true)
-	public boolean hasFinishEnigma(long currentEnigmaNumber) {
-		return (currentEnigmaNumber >= enigmaRepository.getMaxNumber());
-	}
+        // No user has been found
+        if (!user.isPresent()) {
+            log.error("[saveEnigmaExecution] No user has been found");
+            return null;
+        }
+
+        EnigmaExecution enigmaExecution = new EnigmaExecution(user.get(), enigmaInDb.get(), 2l, enigmaToCheck.getAnswer(), hasBeenFound);
+        enigmaExecutionRepository.save(enigmaExecution);
+
+        // Wrong answer
+        if (!hasBeenFound) {
+            return EnigmaExecutionResult.NOT_FOUND;
+        }
+
+        // Game finished
+        if (hasBeenFound && isLastEnigma(enigmaInDb.get().getNumber())) {
+            return EnigmaExecutionResult.FINISHED;
+        }
+
+        // Right answer
+
+        return EnigmaExecutionResult.FOUND;
+
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isLastEnigma(long currentEnigmaNumber) {
+        return (currentEnigmaNumber >= enigmaRepository.getMaxNumber());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Enigma> nextEnigma(Enigma enigma) {
+        return enigmaRepository.findOneByNumber(enigma.getNumber() + 1);
+    }
 
 }

@@ -1,9 +1,10 @@
 package com.zed.enigme.web.rest.enigma;
 
-import java.net.URISyntaxException;
-
-import javax.inject.Inject;
-
+import com.codahale.metrics.annotation.Timed;
+import com.zed.enigme.domain.enigma.Enigma;
+import com.zed.enigme.enumeration.EnigmaExecutionResult;
+import com.zed.enigme.enumeration.EnigmaState;
+import com.zed.enigme.service.enigma.EnigmaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,61 +16,69 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.codahale.metrics.annotation.Timed;
-import com.zed.enigme.domain.enigma.Enigma;
-import com.zed.enigme.enumeration.EnigmaExecutionResult;
-import com.zed.enigme.service.enigma.EnigmaService;
-import com.zed.enigme.web.rest.util.HeaderUtil;
+import javax.inject.Inject;
+import java.net.URISyntaxException;
 
 @RestController
 @RequestMapping("/api")
 public class EnigmaExecutionResource {
 
-	private final Logger log = LoggerFactory.getLogger(EnigmaExecutionResource.class);
+    private final Logger log = LoggerFactory.getLogger(EnigmaExecutionResource.class);
 
-	@Inject
-	private EnigmaService enigmaService;
+    @Inject
+    private EnigmaService enigmaService;
 
-	/**
-	 * GET /enigma/user -> get current enigma for current user
-	 */
-	@RequestMapping(value = "/enigmaExecution", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@Timed
-	@Transactional(readOnly = true)
-	public ResponseEntity<Enigma> getCurrentEnigmaForUser() throws URISyntaxException {
+    /**
+     * GET /enigmaExecution -> get current enigma for current user
+     */
+    @RequestMapping(value = "/enigmaExecution", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    @Transactional(readOnly = true)
+    public ResponseEntity<Enigma> getCurrentEnigmaForUser() throws URISyntaxException {
 
-		log.debug("[getEnigmaForUser] REST request to get current enigma for user");
+        log.debug("[getEnigmaForUser] REST request to get current enigma for user");
 
-		Enigma enigma = enigmaService.getCurrentEnigmaForUser();
+        Enigma enigma = enigmaService.getLastEnigmaFoundForCurrentUser();
+        if (enigma == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
-		if (enigma == null) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+        return new ResponseEntity<>(enigma, HttpStatus.OK);
+    }
 
-		if (enigmaService.hasFinishEnigma(enigma.getNumber())) {
-			return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("enigma", "finished", "Enigme déja finie")).body(null);
-		}
+    /**
+     * GET /enigmaExecution/state -> get current enigma STATE for current user
+     */
+    @RequestMapping(value = "/enigmaExecution/state", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    @Transactional(readOnly = true)
+    public ResponseEntity<EnigmaState> getCurrentEnigmaStateForUser() throws URISyntaxException {
 
-		return new ResponseEntity<>(enigma, HttpStatus.OK);
-	}
+        log.debug("[getEnigmaForUser] REST request to get current enigma STATE for user");
 
-	/**
-	 * POST /enigmaExecution -> Save enigmaExecution
-	 */
-	@RequestMapping(value = "/enigmaExecution", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	@Timed
-	@Transactional(readOnly = true)
-	public ResponseEntity<EnigmaExecutionResult> saveEnigmaExecution(@RequestBody Enigma enigmaToCheck) throws URISyntaxException {
+        EnigmaState enigmaState = enigmaService.getCurrentEnigmaStateForUser();
+        if (enigmaState == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(enigmaState, HttpStatus.OK);
+    }
 
-		log.debug("[saveEnigmaExecution] REST request to check Enigma : {}", enigmaToCheck);
+    /**
+     * POST /enigmaExecution -> Save enigmaExecution
+     */
+    @RequestMapping(value = "/enigmaExecution", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    @Transactional(readOnly = true)
+    public ResponseEntity<EnigmaExecutionResult> saveEnigmaExecution(@RequestBody Enigma enigmaToCheck) throws URISyntaxException {
 
-		EnigmaExecutionResult enigmaExecutionResult = enigmaService.saveEnigmaExecution(enigmaToCheck);
+        log.debug("[saveEnigmaExecution] REST request to check Enigma : {}", enigmaToCheck);
 
-		if (enigmaExecutionResult == null) {
-			return new ResponseEntity<>(null, HeaderUtil.createFailureAlert("enigma", "error", "Impossible de prendre en compte votre réponse"), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		else {
-			return new ResponseEntity<>(enigmaExecutionResult, HttpStatus.OK);
-		}
-	}
+        EnigmaExecutionResult enigmaExecutionResult = enigmaService.saveEnigmaExecution(enigmaToCheck);
+
+        if (enigmaExecutionResult == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>(enigmaExecutionResult, HttpStatus.OK);
+        }
+    }
 }

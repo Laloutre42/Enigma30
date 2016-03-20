@@ -1,28 +1,53 @@
 'use strict';
 
 angular.module('enigme30App')
-    .controller('EnigmaController', function ($log, $scope, Principal, currentEnigmaExecution, EnigmaExecution) {
+    .controller('EnigmaController', function ($log, $state, currentEnigmaExecution, EnigmaExecution) {
 
-        Principal.identity().then(function (account) {
-            $scope.account = account;
-            $scope.isAuthenticated = Principal.isAuthenticated;
-        });
+        var vm = this;
+
+        const NOT_FOUND = "NOT_FOUND";
+        const FOUND = "FOUND";
+        const FINISHED = "FINISHED";
+
+        const BEGINNING = "BEGINNING";
+        const BETWEEN_TWO_ENIGMAS_FOUND = "BETWEEN_TWO_ENIGMAS_FOUND";
+        const BETWEEN_TWO_ENIGMAS_NOT_FOUND = "BETWEEN_TWO_ENIGMAS_NOT_FOUND";
+        const END = "END";
+
+        $log.debug("[EnigmaController] currentEnigmaExecution: ", currentEnigmaExecution);
 
         if (angular.isDefined(currentEnigmaExecution)) {
-            $scope.number = currentEnigmaExecution.number;
-            $scope.question = currentEnigmaExecution.question;
+            vm.number = currentEnigmaExecution.number;
+            vm.question = currentEnigmaExecution.question;
         }
 
-        $scope.submit = function () {
+        vm.submit = function () {
 
             var answerEnigma = {};
-            answerEnigma.number = $scope.number;
-            answerEnigma.question = $scope.question;
-            answerEnigma.answer = $scope.answer;
+            answerEnigma.number = vm.number;
+            answerEnigma.question = vm.question;
+            answerEnigma.answer = vm.answer;
 
-            EnigmaExecution.save(answerEnigma).$promise.then(
-                function (data) {
-                    $log.debug(data);
+            $log.debug("[EnigmaController] submit answerEnigma: ", answerEnigma);
+
+            EnigmaExecution.saveEnigmaExecution(answerEnigma).then(
+                function (response) {
+                    $log.debug(response.data);
+
+                    if (angular.isDefined(response.data) && response.data === NOT_FOUND) {
+                        $log.info("[EnigmaController] NOT FOUND");
+                        $state.go('enigmaTransition', {type: BETWEEN_TWO_ENIGMAS_NOT_FOUND});
+                    }
+
+                    if (angular.isDefined(response.data) && response.data === FOUND) {
+                        $log.info("[EnigmaController] FOUND");
+                        $state.go('enigmaTransition', {type: BETWEEN_TWO_ENIGMAS_FOUND});
+                    }
+
+                    if (angular.isDefined(response.data) && response.data === FINISHED) {
+                        $log.info("[EnigmaController] FINISHED");
+                        $state.go('enigmaTransition', {type: END});
+                    }
 
                 },
                 function (error) {

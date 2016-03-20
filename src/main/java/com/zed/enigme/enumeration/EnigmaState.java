@@ -1,14 +1,13 @@
 package com.zed.enigme.enumeration;
 
-public enum EnigmaExecutionResult {
+public enum EnigmaState {
 
-    NOT_FOUND(1),
-    FOUND(2),
-    FINISHED(3);
+    BEGINNING(1),
+    END(2);
 
     private int num;
 
-    private EnigmaExecutionResult(int num) {
+    private EnigmaState(int num) {
         this.num = num;
     }
 

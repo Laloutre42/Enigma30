@@ -1,0 +1,30 @@
+<h2>Enigmes</h2>
+<div ng-if="vm.isBeginning()">
+    <button type="submit" class="btn btn-primary" ng-click="vm.nextEnigma()">
+        Commencez ou reprendre la partie
+    </button>
+</div>
+
+<div ng-if="vm.isBetweenTwoEnigmasFound()">
+    <uib-alert type="info">Bonne réponse</uib-alert>
+    <button type="submit" class="btn btn-primary" ng-click="vm.nextEnigma()">
+        Enigme suivante
+    </button>
+</div>
+
+<div ng-if="vm.isBetweenTwoEnigmasNotFound()">
+    <uib-alert type="info">Mauvaise réponse</uib-alert>
+    <button type="submit" class="btn btn-primary" ng-click="vm.nextEnigma()">
+        Nouvel essai
+    </button>
+</div>
+
+<div ng-if="vm.isEnd()">
+    <uib-alert type="info">Bravo!</uib-alert>
+</div>
+
+<!--<div class="row">-->
+    <!--<div class="col-sm-12">-->
+        <!--<leaflet center="center" width='100%' height='400' layers='layers' markers="markers"></leaflet>-->
+    <!--</div>-->
+<!--</div>-->

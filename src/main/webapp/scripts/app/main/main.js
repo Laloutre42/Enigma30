@@ -19,19 +19,45 @@ angular.module('enigme30App')
             })
             .state('enigma', {
                 parent: 'site',
-                url: '/enigma',
                 data: {
                     authorities: []
                 },
                 views: {
                     'content@': {
                         templateUrl: 'scripts/app/enigma/enigma.html',
-                        controller: 'EnigmaController'
+                        controller: 'EnigmaController as vm'
                     }
                 },
                 resolve: {
                     currentEnigmaExecution: function (EnigmaExecution) {
-                        return EnigmaExecution.query()
+                        return EnigmaExecution.getCurrentEnigmaForUser()
+                            .then(function (response) {
+                                return response.data;
+                            });
+                    }
+                }
+            })
+            .state('enigmaTransition', {
+                parent: 'site',
+                url: '/enigma',
+                params: {
+                    'type': null
+                },
+                data: {
+                    authorities: []
+                },
+                views: {
+                    'content@': {
+                        templateUrl: 'scripts/app/enigma-transition/enigma-transition.html',
+                        controller: 'EnigmaTransitionController as vm'
+                    }
+                },
+                resolve: {
+                    currentEnigmaStateExecution: function (EnigmaExecution) {
+                        return EnigmaExecution.getCurrentEnigmaStateForUser()
+                            .then(function (response) {
+                                return response.data;
+                            });
                     }
                 }
             });
