@@ -4,16 +4,24 @@
             <span class="hipster img-responsive img-rounded"></span>
         </div>
         <div class="col-md-8">
-            <h1>Soirée de 30 ans</h1>
-            <p class="lead">This is your homepage</p>
+            <h1>Week end de 30 ans</h1>
 
             <p>
-                blbablalblab
+                Si vous êtes sur cette page c'est que vous êtes sans doute invité à participer à un Week end pour fêter les 30 ans de 5 amis.
+                Pour découvrir le lieu tenu secret de cette soirée, il vous faut simplement:
+            <ul>
+                <li>Vous connecter ou vous inscrire sur ce site</li>
+                <li>Cliquer sur le boutton ci-dessous</li>
+            </ul>
             </p>
 
             <div ng-switch="vm.isAuthenticated()">
                 <div class="alert alert-success" ng-switch-when="true">
                     Vous êtes identifié avec l'utilisateur: "{{vm.account.login}}".
+                </div>
+
+                <div class="alert" ng-switch-when="false">
+                    <a type="button" class="btn btn-primary" href="#/login">Connection</a>
                 </div>
 
                 <div class="alert alert-warning" ng-switch-when="false">
@@ -24,7 +32,7 @@
             <p ng-if="vm.isAuthenticated()">
                 <button type="submit" class="btn btn-primary" ng-click="vm.start()">Je veux trouver le lieu de cette soirée !!</button>
             </p>
-            
+
         </div>
     </div>
 </div>
