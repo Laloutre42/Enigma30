@@ -25,7 +25,7 @@
 			<column name="answer" type="varchar(255)">
 				<constraints nullable="false" />
 			</column>
-			<column name="is_ok" type="boolean" valueBoolean="false">
+			<column name="is_ok" type="tinyint(1)" valueBoolean="false">
 				<constraints nullable="false" />
 			</column>
 		</createTable>
