@@ -8,5 +8,5 @@ VOLUME /tmp
 
 ADD target/enigme30*.war app.war
 CMD bash -c 'touch /app.war'
-ENTRYPOINT ["/app.war", "--spring.profiles.active=prod"]
+ENTRYPOINT ["/app.war", "--spring.profiles.active=prod,no-swagger,no-liquibase"]
 #ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]

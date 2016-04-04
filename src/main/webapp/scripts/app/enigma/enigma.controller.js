@@ -14,6 +14,7 @@ angular.module('enigme30App')
         const BETWEEN_TWO_ENIGMAS_NOT_FOUND = "BETWEEN_TWO_ENIGMAS_NOT_FOUND";
         const END = "END";
 
+        var startTime = new Date().getTime();
         $log.debug("[EnigmaController] currentEnigmaExecution: ", currentEnigmaExecution);
 
         if (angular.isDefined(currentEnigmaExecution)) {
@@ -28,9 +29,10 @@ angular.module('enigme30App')
             answerEnigma.question = vm.question;
             answerEnigma.answer = vm.answer;
 
-            $log.debug("[EnigmaController] submit answerEnigma: ", answerEnigma);
+            var executionTime = new Date().getTime() - startTime;
+            $log.debug("[EnigmaController] submit answerEnigma: ", answerEnigma, " in ",executionTime, " ms");
 
-            EnigmaExecution.saveEnigmaExecution(answerEnigma).then(
+            EnigmaExecution.saveEnigmaExecution(answerEnigma, executionTime).then(
                 function (response) {
                     $log.debug(response.data);
 

@@ -15,8 +15,12 @@ angular.module('enigme30App')
             },
 
             // Save Enigma execution for user
-            saveEnigmaExecution: function (answer) {
-                return $http.post('/api/enigmaExecution', answer);
+            saveEnigmaExecution: function (answer, header) {
+                return $http.post('/api/enigmaExecution', answer, {
+                    headers: {
+                        'time': header
+                    }
+                });
             }
         }
     });

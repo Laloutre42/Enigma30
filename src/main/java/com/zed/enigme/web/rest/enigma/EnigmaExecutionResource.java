@@ -11,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.net.URISyntaxException;
@@ -42,6 +39,7 @@ public class EnigmaExecutionResource {
         if (enigma == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        enigma.setAnswer("");
 
         return new ResponseEntity<>(enigma, HttpStatus.OK);
     }
@@ -68,12 +66,12 @@ public class EnigmaExecutionResource {
      */
     @RequestMapping(value = "/enigmaExecution", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    @Transactional(readOnly = true)
-    public ResponseEntity<EnigmaExecutionResult> saveEnigmaExecution(@RequestBody Enigma enigmaToCheck) throws URISyntaxException {
+    @Transactional(readOnly = false)
+    public ResponseEntity<EnigmaExecutionResult> saveEnigmaExecution(@RequestBody Enigma enigmaToCheck, @RequestHeader(value="time") Long time) throws URISyntaxException {
 
-        log.debug("[saveEnigmaExecution] REST request to check Enigma : {}", enigmaToCheck);
+        log.debug("[saveEnigmaExecution] REST request to check Enigma : {} with time {}", enigmaToCheck, time);
 
-        EnigmaExecutionResult enigmaExecutionResult = enigmaService.saveEnigmaExecution(enigmaToCheck);
+        EnigmaExecutionResult enigmaExecutionResult = enigmaService.saveEnigmaExecution(enigmaToCheck, time);
 
         if (enigmaExecutionResult == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

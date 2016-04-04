@@ -5,18 +5,15 @@
 
     <form name="enigmaForm" class="form-horizontal" role="form">
 
+        <br>
         <!--Question-->
-        <div class="form-group question">
-            <label class="col-sm-2 control-label">Question</label>
-
-            <div class="col-sm-10">
-                <label class="col-sm-2 control-label">{{vm.question}}</label>
-            </div>
+        <div class="question">
+            <b>Question</b>: {{vm.question}}
         </div>
+        <br>
 
         <!--Answer-->
         <div class="form-group answer">
-            <label class="col-sm-2 control-label">Réponse</label>
 
             <div class="col-sm-10" ng-class="{'has-error': enigmaForm.answer.$invalid && enigmaForm.answer.$dirty}">
                 <input name="answer" type="text" class="form-control" placeholder="Réponse" ng-model="vm.answer" required maxlength="255">

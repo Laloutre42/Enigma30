@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.zed.enigme.domain.User;
+import org.hibernate.annotations.Type;
 
 /**
  * A enigma execution
@@ -44,7 +45,8 @@ public class EnigmaExecution implements Serializable {
 	private String answer;
 
 	@NotNull
-	@Column
+	@Column(columnDefinition = "TINYINT")
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private boolean isOk;
 
 	public EnigmaExecution() {

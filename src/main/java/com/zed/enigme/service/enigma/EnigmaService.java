@@ -9,6 +9,7 @@ import com.zed.enigme.repository.UserRepository;
 import com.zed.enigme.repository.enigma.EnigmaExecutionRepository;
 import com.zed.enigme.repository.enigma.EnigmaRepository;
 import com.zed.enigme.security.SecurityUtils;
+import com.zed.enigme.service.util.AnswerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -105,8 +106,8 @@ public class EnigmaService {
         return EnigmaState.BEGINNING;
     }
 
-    @Transactional(readOnly = true)
-    public EnigmaExecutionResult saveEnigmaExecution(Enigma enigmaToCheck) {
+    @Transactional(readOnly = false)
+    public EnigmaExecutionResult saveEnigmaExecution(Enigma enigmaToCheck, Long time) {
 
         log.debug("[saveEnigmaExecution] REST request to check Enigma : {}", enigmaToCheck);
 
@@ -117,11 +118,12 @@ public class EnigmaService {
             return null;
         }
 
-        log.debug("[saveEnigmaExecution] Enigma answer to check : -{}-", enigmaToCheck.getAnswer());
-        log.debug("[saveEnigmaExecution] Enigma answer in db : -{}-", enigmaInDb.get().getAnswer());
+        log.info("[saveEnigmaExecution] Enigma answer to check : -{}-", enigmaToCheck.getAnswer());
+        log.info("[saveEnigmaExecution] Enigma answer in db : -{}-", enigmaInDb.get().getAnswer());
+        log.info("[saveEnigmaExecution] Time is : {} ms", time);
 
         // Check if answer match proposition
-        boolean hasBeenFound = enigmaInDb.get().getAnswer().trim().replaceAll("/\\s/", "").equalsIgnoreCase(enigmaToCheck.getAnswer().trim().replaceAll("/\\s/", ""));
+        boolean hasBeenFound = AnswerService.refactAnswer(enigmaInDb.get().getAnswer()).equalsIgnoreCase(AnswerService.refactAnswer(enigmaToCheck.getAnswer()));
 
         Optional<User> user = userRepository.findOneByLogin(SecurityUtils.getCurrentUser().getUsername());
 
@@ -131,7 +133,7 @@ public class EnigmaService {
             return null;
         }
 
-        EnigmaExecution enigmaExecution = new EnigmaExecution(user.get(), enigmaInDb.get(), 2l, enigmaToCheck.getAnswer(), hasBeenFound);
+        EnigmaExecution enigmaExecution = new EnigmaExecution(user.get(), enigmaInDb.get(), time, enigmaToCheck.getAnswer(), hasBeenFound);
         enigmaExecutionRepository.save(enigmaExecution);
 
         // Wrong answer

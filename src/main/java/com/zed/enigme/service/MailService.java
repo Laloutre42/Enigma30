@@ -19,6 +19,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import javax.inject.Inject;
 import javax.mail.internet.MimeMessage;
 import java.util.Locale;
+import java.util.Properties;
 
 /**
  * Service for sending e-mails.
@@ -35,7 +36,6 @@ public class MailService {
     @Inject
     private JHipsterProperties jHipsterProperties;
 
-    @Inject
     private JavaMailSenderImpl javaMailSender;
 
     @Inject
@@ -49,10 +49,26 @@ public class MailService {
      */
     private String from;
 
+    @Inject
+    MailService(JavaMailSenderImpl javaMailSender){
+
+        this.javaMailSender = javaMailSender;
+
+        // Set properties indicating that we want to use STARTTLS to encrypt the connection.
+        // The SMTP session will begin on an unencrypted connection, and then the client
+        // will issue a STARTTLS command to upgrade to an encrypted connection.
+        Properties props = System.getProperties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.starttls.required", "true");
+
+        this.javaMailSender.setJavaMailProperties(props);
+    }
+
     @Async
     public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
-        log.debug("Send e-mail[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}",
-            isMultipart, isHtml, to, subject, content);
+        log.debug("Send e-mail[multipart '{}' and html '{}'] to '{}' from '{}' with subject '{}' and content={}",
+            isMultipart, isHtml, to, jHipsterProperties.getMail().getFrom(), subject, content);
 
         // Prepare message using a Spring helper
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();

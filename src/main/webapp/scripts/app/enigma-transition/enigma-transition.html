@@ -1,41 +1,49 @@
-<h3>Vous souhaitez trouver le lieu de la soirée?</h3>
-
-<p>
-    <br>
-    Pour cela rien de simple, il vous faut juste répondre à une série de 5 énigmes de type <a href="https://fr.wikipedia.org/wiki/Contrario" target="_blank">Contrario.</a>
-    <br>Par exemple:
-<ul>
-    <li><b>Question: </b>Le petit rouge</li>
-    <li><b>Réponse: </b>Le grand bleu</li>
-</ul>
-<br>Partant de <b>Saint-Etienne</b>, chaque énigme vous mènera vers un endroit se rapprochant du lieu final ou se tiendra ce fameux <b>Week end</b>.
-<br>
-<br>Bonne chance !</br>
-</p>
-
-<br>
 <div ng-if="vm.isBeginning()">
+    <h3>Vous souhaitez trouver le lieu de la soirée?</h3>
+
+    <p>
+        <br>
+        Pour cela rien de simple, il vous faut juste répondre à une série de 5 énigmes de type <a href="https://fr.wikipedia.org/wiki/Contrario" target="_blank">Contrario.</a>
+        <br>Par exemple:
+    <ul>
+        <li><b>Question: </b>Le petit rouge</li>
+        <li><b>Réponse: </b>Le grand bleu</li>
+    </ul>
+    <br>Partant de <b>Saint-Etienne</b>, chaque énigme vous mènera vers un endroit se rapprochant du lieu final ou se tiendra ce fameux <b>Week end</b>.
+    <br>
+    <br>Bonne chance !</br>
+    </p>
+
+    <br>
     <button type="submit" class="btn btn-primary" ng-click="vm.nextEnigma()">
         Commencez ou reprendre ma partie
     </button>
 </div>
 
 <div ng-if="vm.isBetweenTwoEnigmasFound()">
-    <uib-alert type="info">Bonne réponse</uib-alert>
+    <uib-alert type="success">Bonne réponse</uib-alert>
     <button type="submit" class="btn btn-primary" ng-click="vm.nextEnigma()">
         Enigme suivante
     </button>
 </div>
 
 <div ng-if="vm.isBetweenTwoEnigmasNotFound()">
-    <uib-alert type="info">Mauvaise réponse</uib-alert>
+    <uib-alert type="danger">Mauvaise réponse</uib-alert>
     <button type="submit" class="btn btn-primary" ng-click="vm.nextEnigma()">
         Nouvel essai
     </button>
 </div>
 
 <div ng-if="vm.isEnd()">
-    <uib-alert type="info">Bravo!</uib-alert>
+    <uib-alert type="success">Bravo, vous avez découvert le lieu où passez le Week end anniversaire!</uib-alert>
+
+    Nous vous donnons donc rendez-vous dans la <b>Maison dans la nature</b>
+    <br>
+    <br>
+
+    <ul>
+        <li><a href="http://www.maisondanslanature.com">Le site internet</a></li>
+    </ul>
 </div>
 
 <!--<div class="row">-->

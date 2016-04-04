@@ -8,6 +8,5 @@
     <include file="classpath:config/liquibase/changelog/00000000000001_update_enigma.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/00000000000002_update_enigma_csv.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/00000000000003_update_enigma_execution.xml" relativeToChangelogFile="false"/>
-    <include file="classpath:config/liquibase/changelog/00000000000004_update_enigma_execution_csv.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
 </databaseChangeLog>
