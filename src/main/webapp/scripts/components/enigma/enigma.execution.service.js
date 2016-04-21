@@ -21,6 +21,12 @@ angular.module('enigme30App')
                         'time': header
                     }
                 });
+            },
+
+            // Get enigma statistics
+            getTryNumberForEachUser: function () {
+                return $http.get('/api/enigmaExecution/getTryNumberForEachUser');
             }
+
         }
     });

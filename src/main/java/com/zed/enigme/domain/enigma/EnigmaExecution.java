@@ -1,19 +1,14 @@
 package com.zed.enigme.domain.enigma;
 
-import java.io.Serializable;
-import java.time.Duration;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zed.enigme.domain.User;
 import org.hibernate.annotations.Type;
+import org.springframework.data.annotation.CreatedDate;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 /**
  * A enigma execution
@@ -21,95 +16,108 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "enigma_execution")
 public class EnigmaExecution implements Serializable {
-	
-	private static final long serialVersionUID = -3332080265129685731L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+    private static final long serialVersionUID = -3332080265129685731L;
 
-	@NotNull
-	@ManyToOne
-	private User user;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-	@NotNull
-	@ManyToOne
-	private Enigma enigma;
+    @NotNull
+    @ManyToOne
+    private User user;
 
-	@NotNull
-	@Column
-	private Long duration;
+    @NotNull
+    @ManyToOne
+    private Enigma enigma;
 
-	@NotNull
-	@Column
-	private String answer;
+    @NotNull
+    @Column
+    private Long duration;
 
-	@NotNull
-	@Column(columnDefinition = "TINYINT")
-	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private boolean isOk;
+    @NotNull
+    @Column
+    private String answer;
 
-	public EnigmaExecution() {
-	}
+    @NotNull
+    @Column(columnDefinition = "TINYINT")
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    private boolean isOk;
 
-	public EnigmaExecution(User user,
-			Enigma enigma,
-			Long duration,
-			String answer,
-			boolean isOk) {
-		this.user = user;
-		this.enigma = enigma;
-		this.duration = duration;
-		this.answer = answer;
-		this.isOk = isOk;
-	}
+    @CreatedDate
+    @NotNull
+    @Column(name = "created_date", nullable = false)
+    @JsonIgnore
+    private ZonedDateTime createdDate = ZonedDateTime.now();
 
-	public Long getId() {
-		return id;
-	}
+    public EnigmaExecution() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public EnigmaExecution(User user,
+                           Enigma enigma,
+                           Long duration,
+                           String answer,
+                           boolean isOk) {
+        this.user = user;
+        this.enigma = enigma;
+        this.duration = duration;
+        this.answer = answer;
+        this.isOk = isOk;
+    }
 
-	public User getUser() {
-		return user;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Enigma getEnigma() {
-		return enigma;
-	}
+    public User getUser() {
+        return user;
+    }
 
-	public void setEnigma(Enigma enigma) {
-		this.enigma = enigma;
-	}
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-	public Long getDuration() {
-		return duration;
-	}
+    public Enigma getEnigma() {
+        return enigma;
+    }
 
-	public void setDuration(Long duration) {
-		this.duration = duration;
-	}
+    public void setEnigma(Enigma enigma) {
+        this.enigma = enigma;
+    }
 
-	public String getAnswer() {
-		return answer;
-	}
+    public Long getDuration() {
+        return duration;
+    }
 
-	public void setAnswer(String answer) {
-		this.answer = answer;
-	}
+    public void setDuration(Long duration) {
+        this.duration = duration;
+    }
 
-	public boolean isOk() {
-		return isOk;
-	}
+    public String getAnswer() {
+        return answer;
+    }
 
-	public void setOk(boolean isOk) {
-		this.isOk = isOk;
-	}
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
 
+    public boolean isOk() {
+        return isOk;
+    }
+
+    public void setOk(boolean isOk) {
+        this.isOk = isOk;
+    }
+
+    public ZonedDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(ZonedDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
 }

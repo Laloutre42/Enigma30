@@ -40,12 +40,12 @@ angular.module('enigme30App')
 
         $log.debug("[EnigmaTransitionController] vm.type is", vm.type);
 
-        // Leaflet map
+// Leaflet map
         angular.extend($scope, {
             center: {
-                lat: 45.42929873257377,
-                lng: 4.4377899169921875,
-                zoom: 10
+                lat: 45.38,
+                lng: 4.5,
+                zoom: 11
             },
             layers: {
                 baselayers: {
@@ -57,10 +57,10 @@ angular.module('enigme30App')
                 }
             },
             markers: {
-                osloMarker: {
-                    lat: 45.410247,
-                    lng: 4.446199,
-                    message: "Château de Rochetaillé",
+                m7: {
+                    lat: 45.24680,
+                    lng: 4.52272,
+                    message: "Maison dans la Nature",
                     focus: true,
                     draggable: false
                 }

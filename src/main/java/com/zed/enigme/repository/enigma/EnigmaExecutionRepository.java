@@ -14,4 +14,7 @@ public interface EnigmaExecutionRepository extends JpaRepository<EnigmaExecution
 
     public List<EnigmaExecution> findByUser_Id(Long id);
 
+    public List<EnigmaExecution> findByEnigma_idAndUser_Id(Long enigmaId, Long userId);
+
+    public Long countByUser_Id(Long userId);
 }

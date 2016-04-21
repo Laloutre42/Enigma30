@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('enigme30App')
-    .controller('EnigmaController', function ($log, $state, currentEnigmaExecution, EnigmaExecution) {
+    .controller('EnigmaController', function ($scope, $log, $state, currentEnigmaExecution, EnigmaExecution) {
 
         var vm = this;
 
@@ -30,7 +30,7 @@ angular.module('enigme30App')
             answerEnigma.answer = vm.answer;
 
             var executionTime = new Date().getTime() - startTime;
-            $log.debug("[EnigmaController] submit answerEnigma: ", answerEnigma, " in ",executionTime, " ms");
+            $log.debug("[EnigmaController] submit answerEnigma: ", answerEnigma, " in ", executionTime, " ms");
 
             EnigmaExecution.saveEnigmaExecution(answerEnigma, executionTime).then(
                 function (response) {
@@ -56,5 +56,84 @@ angular.module('enigme30App')
                     $log.error(error);
                 });
         };
+
+        // Leaflet map
+        angular.extend($scope, {
+            center: {
+                lat: 45.38,
+                lng: 4.5,
+                zoom: 11
+            },
+            layers: {
+                baselayers: {
+                    osm: {
+                        name: 'OpenStreetMap',
+                        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        type: 'xyz'
+                    }
+                }
+            },
+            markers: {
+                m1: {
+                    lat: 45.42082,
+                    lng: 4.41095,
+                    message: "Le Rond-Point",
+                    focus: false,
+                    draggable: false,
+                    opacity: (vm.number > 1) ? 1 : 0
+                },
+                m2: {
+                    lat: 45.410247,
+                    lng: 4.446199,
+                    message: "Château de Rochetaillé",
+                    focus: false,
+                    draggable: false,
+                    opacity: (vm.number > 2) ? 1 : 0
+                },
+                m3: {
+                    lat: 45.37685,
+                    lng: 4.46001,
+                    message: "Le Pas Du Riot",
+                    focus: false,
+                    draggable: false,
+                    opacity: (vm.number > 3) ? 1 : 0
+                },
+                m4: {
+                    lat: 45.37337,
+                    lng: 4.49098,
+                    message: "Cimetière de Tarentaise",
+                    focus: false,
+                    draggable: false,
+                    opacity: (vm.number > 4) ? 1 : 0
+                },
+                m5: {
+                    lat: 45.32709,
+                    lng: 4.55477,
+                    message: "Thélis-la-Combe",
+                    focus: false,
+                    draggable: false,
+                    opacity: (vm.number > 5) ? 1 : 0
+                },
+                m6: {
+                    lat: 45.26680,
+                    lng: 4.54320,
+                    message: "Montchal",
+                    focus: false,
+                    draggable: false,
+                    opacity: (vm.number > 6) ? 1 : 0
+                },
+                m7: {
+                    lat: 45.24680,
+                    lng: 4.52272,
+                    message: "Maison dans la Nature",
+                    focus: false,
+                    draggable: false,
+                    opacity: (vm.number > 7) ? 1 : 0
+                }
+            },
+            defaults: {
+                scrollWheelZoom: false
+            }
+        });
 
     });

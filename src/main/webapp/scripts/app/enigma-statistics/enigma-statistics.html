@@ -1,0 +1,30 @@
+<div>
+
+    <h2>Statistiques des utilisateurs</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th ng-click="predicate = 'user.login'; reverse=!reverse"><span>User</span></th>
+                <th ng-click="predicate = 'totalNumberOfTry'; reverse=!reverse">Nombre d'essais</th>
+                <th ng-click="predicate = 'totalDuration'; reverse=!reverse">Temps passé</th>
+                <th ng-click="predicate = 'currentEnigma'; reverse=!reverse">Enigme courante</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in vm.data | orderBy:predicate:reverse">
+                <td>{{item.user.login}}</td>
+                <td>{{item.totalNumberOfTry}}</td>
+                <td>{{item.totalDuration | date: 'H:mm:ss': 'UTC' }}</td>
+                <td>
+                    <span ng-if="item.currentEnigma == 0" class="text-danger">Non commencé</span>
+                    <span ng-if="item.currentEnigma > 0 && item.currentEnigma < 6">{{item.currentEnigma}}</span>
+                    <span ng-if="item.currentEnigma >= 6" class="text-success">Terminé</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

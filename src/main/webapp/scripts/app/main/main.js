@@ -17,6 +17,30 @@ angular.module('enigme30App')
                 },
                 resolve: {}
             })
+            .state('enigmaStatistics', {
+                parent: 'site',
+                url: '/enigmaStatistics',
+                params: {
+                    'type': null
+                },
+                data: {
+                    authorities: []
+                },
+                views: {
+                    'content@': {
+                        templateUrl: 'scripts/app/enigma-statistics/enigma-statistics.html',
+                        controller: 'EnigmaStatisticsController as vm'
+                    }
+                },
+                resolve: {
+                    tryNumberForEachUser: function (EnigmaExecution) {
+                        return EnigmaExecution.getTryNumberForEachUser()
+                            .then(function (response) {
+                                return response.data;
+                            });
+                    }
+                }
+            })
             .state('enigma', {
                 parent: 'site',
                 data: {

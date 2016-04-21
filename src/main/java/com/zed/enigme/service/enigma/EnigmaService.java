@@ -123,7 +123,7 @@ public class EnigmaService {
         log.info("[saveEnigmaExecution] Time is : {} ms", time);
 
         // Check if answer match proposition
-        boolean hasBeenFound = AnswerService.refactAnswer(enigmaInDb.get().getAnswer()).equalsIgnoreCase(AnswerService.refactAnswer(enigmaToCheck.getAnswer()));
+        boolean hasBeenFound = AnswerService.hasBeenFound(enigmaToCheck.getAnswer(), enigmaInDb.get().getAnswer());
 
         Optional<User> user = userRepository.findOneByLogin(SecurityUtils.getCurrentUser().getUsername());
 
@@ -133,6 +133,7 @@ public class EnigmaService {
             return null;
         }
 
+        // Save execution
         EnigmaExecution enigmaExecution = new EnigmaExecution(user.get(), enigmaInDb.get(), time, enigmaToCheck.getAnswer(), hasBeenFound);
         enigmaExecutionRepository.save(enigmaExecution);
 
@@ -147,9 +148,7 @@ public class EnigmaService {
         }
 
         // Right answer
-
         return EnigmaExecutionResult.FOUND;
-
     }
 
     @Transactional(readOnly = true)
