@@ -85,50 +85,42 @@ angular.module('enigme30App')
                 m2: {
                     lat: 45.410247,
                     lng: 4.446199,
-                    message: "Château de Rochetaillé",
+                    message: "Château de Rochetaillée",
                     focus: false,
                     draggable: false,
                     opacity: (vm.number > 2) ? 1 : 0
                 },
                 m3: {
-                    lat: 45.37685,
-                    lng: 4.46001,
-                    message: "Le Pas Du Riot",
+                    lat: 45.37337,
+                    lng: 4.49098,
+                        message: "Cimetière de Tarentaise",
                     focus: false,
                     draggable: false,
                     opacity: (vm.number > 3) ? 1 : 0
                 },
                 m4: {
-                    lat: 45.37337,
-                    lng: 4.49098,
-                    message: "Cimetière de Tarentaise",
-                    focus: false,
-                    draggable: false,
-                    opacity: (vm.number > 4) ? 1 : 0
-                },
-                m5: {
                     lat: 45.32709,
                     lng: 4.55477,
                     message: "Thélis-la-Combe",
                     focus: false,
                     draggable: false,
-                    opacity: (vm.number > 5) ? 1 : 0
+                    opacity: (vm.number > 4) ? 1 : 0
                 },
-                m6: {
+                m5: {
                     lat: 45.26680,
                     lng: 4.54320,
                     message: "Montchal",
                     focus: false,
                     draggable: false,
-                    opacity: (vm.number > 6) ? 1 : 0
+                    opacity: (vm.number > 5) ? 1 : 0
                 },
-                m7: {
+                m6: {
                     lat: 45.24680,
                     lng: 4.52272,
                     message: "Maison dans la Nature",
                     focus: false,
                     draggable: false,
-                    opacity: (vm.number > 7) ? 1 : 0
+                    opacity: (vm.number > 6) ? 1 : 0
                 }
             },
             defaults: {
