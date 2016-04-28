@@ -22,11 +22,16 @@
 
         <div>
             <button validation-submit="enigmaForm" type="submit" class="btn btn-primary" ng-click="vm.submit()" ng-disabled="enigmaForm.$invalid">Soumettre</button>
+            <span class="btn btn-info" ng-click="vm.isCollapsed = !vm.isCollapsed">Indice</span>
+        </div>
+
+        <div type="info" ng-if="vm.indice !== 'undefined'">
+            <br>
+            <uib-alert type="info" uib-collapse="!vm.isCollapsed">{{vm.indice}}</uib-alert>
         </div>
 
     </form>
 
-    <br>
     <div class="row">
         <div class="col-sm-12">
             <leaflet center="center" width='100%' height='600' layers='layers' markers="markers"></leaflet>

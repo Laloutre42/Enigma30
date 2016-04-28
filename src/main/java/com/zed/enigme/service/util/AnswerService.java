@@ -1,5 +1,7 @@
 package com.zed.enigme.service.util;
 
+import com.zed.enigme.domain.enigma.AnswerResult;
+import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +33,9 @@ public final class AnswerService {
      * @param realAnswer
      * @return
      */
-    public static boolean hasBeenFound(String answerToCheck, String realAnswer) {
+    public static AnswerResult hasBeenFound(String answerToCheck, String realAnswer) {
+
+        AnswerResult answerResult = new AnswerResult(true, 0, 0);
 
         answerToCheck = refactAnswer(answerToCheck);
         realAnswer = refactAnswer(realAnswer);
@@ -39,13 +43,21 @@ public final class AnswerService {
         log.info("[hasBeenFound] refactAnswer, answerToCheck : -{}-", answerToCheck);
         log.info("[hasBeenFound] refactAnswer, realAnswer : -{}-", realAnswer);
 
+        NormalizedLevenshtein normalizedLevenshtein = new NormalizedLevenshtein();
+        double distance = normalizedLevenshtein.distance(answerToCheck, realAnswer);
+
+        answerResult.setDistanceInPercentage(Math.round((1d - distance) * 100d));
+        log.info("[hasBeenFound] normalizedLevenshtein is : -{}%-", answerResult.getDistanceInPercentage());
+
         for (String word : realAnswer.split("\\s")) {
 
             if (!answerToCheck.contains(word)) {
-                return false;
+                answerResult.setHasBeenFound(false);
+            } else {
+                answerResult.setNbWordsFound(answerResult.getNbWordsFound() + 1);
             }
         }
-        return true;
+        return answerResult;
     }
 
     public static String removeAccent(String source) {

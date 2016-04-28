@@ -29,6 +29,22 @@
 
 <div ng-if="vm.isBetweenTwoEnigmasNotFound()">
     <uib-alert type="danger">Mauvaise réponse</uib-alert>
+
+    <form name="AnswerResultform" class="form-horizontal" role="form">
+
+        <br>
+        <!--Similitude avec la réponse-->
+        <!--<div class="question" ng-if="vm.executionResult !== 'undefined' && vm.executionResult.distanceInPercentage !== 'undefined'">-->
+            <!--<b>Similitude avec la réponse</b>: <span class="text-danger"><h4>{{vm.executionResult.distanceInPercentage}} %</h4></span>-->
+        <!--</div>-->
+        <!--Nombre de mot(s) trouvé(s)-->
+        <div class="question" ng-if="vm.executionResult !== 'undefined' && vm.executionResult.nbWordsFound !== 'undefined'">
+            <b>Nombre de mot(s) trouvé(s)</b>: <span class="text-danger"><h4>{{vm.executionResult.nbWordsFound}}</h4></span>
+        </div>
+        <br>
+
+    </form>
+
     <button type="submit" class="btn btn-primary" ng-click="vm.nextEnigma()">
         Nouvel essai
     </button>

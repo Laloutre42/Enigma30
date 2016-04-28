@@ -3,7 +3,7 @@ package com.zed.enigme.web.rest.enigma;
 import com.codahale.metrics.annotation.Timed;
 import com.zed.enigme.domain.User;
 import com.zed.enigme.domain.enigma.Enigma;
-import com.zed.enigme.enumeration.EnigmaExecutionResult;
+import com.zed.enigme.domain.enigma.EnigmaExecutionAnswerResult;
 import com.zed.enigme.enumeration.EnigmaState;
 import com.zed.enigme.service.enigma.EnigmaExecutionService;
 import com.zed.enigme.service.enigma.EnigmaService;
@@ -74,16 +74,16 @@ public class EnigmaExecutionResource {
     @RequestMapping(value = "/enigmaExecution", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     @Transactional(readOnly = false)
-    public ResponseEntity<EnigmaExecutionResult> saveEnigmaExecution(@RequestBody Enigma enigmaToCheck, @RequestHeader(value = "time") Long time) throws URISyntaxException {
+    public ResponseEntity<EnigmaExecutionAnswerResult> saveEnigmaExecution(@RequestBody Enigma enigmaToCheck, @RequestHeader(value = "time") Long time) throws URISyntaxException {
 
         log.debug("[saveEnigmaExecution] REST request to check Enigma : {} with time {}", enigmaToCheck, time);
 
-        EnigmaExecutionResult enigmaExecutionResult = enigmaService.saveEnigmaExecution(enigmaToCheck, time);
+        EnigmaExecutionAnswerResult enigmaExecutionAnswerResult = enigmaService.saveEnigmaExecution(enigmaToCheck, time);
 
-        if (enigmaExecutionResult == null) {
+        if (enigmaExecutionAnswerResult == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<>(enigmaExecutionResult, HttpStatus.OK);
+            return new ResponseEntity<>(enigmaExecutionAnswerResult, HttpStatus.OK);
         }
     }
 

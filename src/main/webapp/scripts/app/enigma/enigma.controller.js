@@ -20,7 +20,10 @@ angular.module('enigme30App')
         if (angular.isDefined(currentEnigmaExecution)) {
             vm.number = currentEnigmaExecution.number;
             vm.question = currentEnigmaExecution.question;
+            vm.indice = currentEnigmaExecution.indice;
         }
+
+        vm.isCollapsed = false;
 
         vm.submit = function () {
 
@@ -36,19 +39,19 @@ angular.module('enigme30App')
                 function (response) {
                     $log.debug(response.data);
 
-                    if (angular.isDefined(response.data) && response.data === NOT_FOUND) {
+                    if (angular.isDefined(response.data) && angular.isDefined(response.data.enigmaExecutionResult) && response.data.enigmaExecutionResult === NOT_FOUND) {
                         $log.info("[EnigmaController] NOT FOUND");
-                        $state.go('enigmaTransition', {type: BETWEEN_TWO_ENIGMAS_NOT_FOUND});
+                        $state.go('enigmaTransition', {type: BETWEEN_TWO_ENIGMAS_NOT_FOUND, executionResult: response.data.answerResult});
                     }
 
-                    if (angular.isDefined(response.data) && response.data === FOUND) {
+                    if (angular.isDefined(response.data) && angular.isDefined(response.data.enigmaExecutionResult) && response.data.enigmaExecutionResult === FOUND) {
                         $log.info("[EnigmaController] FOUND");
-                        $state.go('enigmaTransition', {type: BETWEEN_TWO_ENIGMAS_FOUND});
+                        $state.go('enigmaTransition', {type: BETWEEN_TWO_ENIGMAS_FOUND, executionResult: response.data.answerResult});
                     }
 
-                    if (angular.isDefined(response.data) && response.data === FINISHED) {
+                    if (angular.isDefined(response.data) && angular.isDefined(response.data.enigmaExecutionResult) && response.data.enigmaExecutionResult === FINISHED) {
                         $log.info("[EnigmaController] FINISHED");
-                        $state.go('enigmaTransition', {type: END});
+                        $state.go('enigmaTransition', {type: END, executionResult: response.data.answerResult});
                     }
 
                 },
@@ -93,7 +96,7 @@ angular.module('enigme30App')
                 m3: {
                     lat: 45.37337,
                     lng: 4.49098,
-                        message: "Cimetière de Tarentaise",
+                    message: "Cimetière de Tarentaise",
                     focus: false,
                     draggable: false,
                     opacity: (vm.number > 3) ? 1 : 0

@@ -28,6 +28,9 @@ public class Enigma implements Serializable {
     @Column(name = "answer", length = 255, unique = false, nullable = false)
     private String answer;
 
+    @Column(name = "indice", length = 255, unique = false, nullable = false)
+    private String indice;
+
 
     public Long getId() {
         return id;
@@ -57,19 +60,23 @@ public class Enigma implements Serializable {
         this.question = question;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Enigma [id=");
-        builder.append(id);
-        builder.append(", number=");
-        builder.append(number);
-        builder.append(", question=");
-        builder.append(question);
-        builder.append(", answer=");
-        builder.append(answer);
-        builder.append("]");
-        return builder.toString();
+    public String getIndice() {
+        return indice;
     }
 
+    public void setIndice(String indice) {
+        this.indice = indice;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Enigma{");
+        sb.append("id=").append(id);
+        sb.append(", number=").append(number);
+        sb.append(", question='").append(question).append('\'');
+        sb.append(", answer='").append(answer).append('\'');
+        sb.append(", indice='").append(indice).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

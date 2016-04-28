@@ -32,6 +32,7 @@ angular.module('enigme30App')
         var vm = this;
 
         vm.type = angular.copy($stateParams.type) || currentEnigmaStateExecution || BEGINNING;
+        vm.executionResult = angular.copy($stateParams.executionResult) || undefined;
         vm.isBeginning = isBeginning;
         vm.isBetweenTwoEnigmasFound = isBetweenTwoEnigmasFound;
         vm.isBetweenTwoEnigmasNotFound = isBetweenTwoEnigmasNotFound;
@@ -39,6 +40,7 @@ angular.module('enigme30App')
         vm.nextEnigma = nextEnigma;
 
         $log.debug("[EnigmaTransitionController] vm.type is", vm.type);
+        $log.debug("[EnigmaTransitionController] vm.executionResult is", vm.executionResult);
 
 // Leaflet map
         angular.extend($scope, {

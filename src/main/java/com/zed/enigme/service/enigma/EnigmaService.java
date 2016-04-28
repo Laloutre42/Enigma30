@@ -1,8 +1,10 @@
 package com.zed.enigme.service.enigma;
 
 import com.zed.enigme.domain.User;
+import com.zed.enigme.domain.enigma.AnswerResult;
 import com.zed.enigme.domain.enigma.Enigma;
 import com.zed.enigme.domain.enigma.EnigmaExecution;
+import com.zed.enigme.domain.enigma.EnigmaExecutionAnswerResult;
 import com.zed.enigme.enumeration.EnigmaExecutionResult;
 import com.zed.enigme.enumeration.EnigmaState;
 import com.zed.enigme.repository.UserRepository;
@@ -107,7 +109,7 @@ public class EnigmaService {
     }
 
     @Transactional(readOnly = false)
-    public EnigmaExecutionResult saveEnigmaExecution(Enigma enigmaToCheck, Long time) {
+    public EnigmaExecutionAnswerResult saveEnigmaExecution(Enigma enigmaToCheck, Long time) {
 
         log.debug("[saveEnigmaExecution] REST request to check Enigma : {}", enigmaToCheck);
 
@@ -123,7 +125,7 @@ public class EnigmaService {
         log.info("[saveEnigmaExecution] Time is : {} ms", time);
 
         // Check if answer match proposition
-        boolean hasBeenFound = AnswerService.hasBeenFound(enigmaToCheck.getAnswer(), enigmaInDb.get().getAnswer());
+        AnswerResult answerResult = AnswerService.hasBeenFound(enigmaToCheck.getAnswer(), enigmaInDb.get().getAnswer());
 
         Optional<User> user = userRepository.findOneByLogin(SecurityUtils.getCurrentUser().getUsername());
 
@@ -134,21 +136,21 @@ public class EnigmaService {
         }
 
         // Save execution
-        EnigmaExecution enigmaExecution = new EnigmaExecution(user.get(), enigmaInDb.get(), time, enigmaToCheck.getAnswer(), hasBeenFound);
+        EnigmaExecution enigmaExecution = new EnigmaExecution(user.get(), enigmaInDb.get(), time, enigmaToCheck.getAnswer(), answerResult.isHasBeenFound());
         enigmaExecutionRepository.save(enigmaExecution);
 
         // Wrong answer
-        if (!hasBeenFound) {
-            return EnigmaExecutionResult.NOT_FOUND;
+        if (!answerResult.isHasBeenFound()) {
+            return new EnigmaExecutionAnswerResult(EnigmaExecutionResult.NOT_FOUND, answerResult);
         }
 
         // Game finished
-        if (hasBeenFound && isLastEnigma(enigmaInDb.get().getNumber())) {
-            return EnigmaExecutionResult.FINISHED;
+        if (answerResult.isHasBeenFound() && isLastEnigma(enigmaInDb.get().getNumber())) {
+            return new EnigmaExecutionAnswerResult(EnigmaExecutionResult.FINISHED, answerResult);
         }
 
         // Right answer
-        return EnigmaExecutionResult.FOUND;
+        return new EnigmaExecutionAnswerResult(EnigmaExecutionResult.FOUND, answerResult);
     }
 
     @Transactional(readOnly = true)

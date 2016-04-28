@@ -65,7 +65,8 @@ angular.module('enigme30App')
                 parent: 'site',
                 url: '/enigma',
                 params: {
-                    'type': null
+                    'type': null,
+                    'executionResult': null,
                 },
                 data: {
                     authorities: []
